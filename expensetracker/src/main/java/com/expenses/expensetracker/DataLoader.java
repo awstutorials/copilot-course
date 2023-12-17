@@ -1,28 +1,37 @@
 package com.expenses.expensetracker;
 
-import com.expenses.expensetracker.domain.Expense;
-import com.expenses.expensetracker.repository.ExpenseRepository;
-
 import java.time.LocalDate;
 
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
-@Configuration
-public class DataLoader {
+import com.expenses.expensetracker.domain.Expense;
+import com.expenses.expensetracker.repository.ExpenseRepository;
 
-    @Bean
-    CommandLineRunner initDatabase(ExpenseRepository repository) {
-        return args -> {
-            Expense expense1 = new Expense(1L, LocalDate.now(), "Coffee", 2.50, "Food", "EUR");
-            Expense expense2 = new Expense(2L, LocalDate.now(), "Coffee1", 12.50, "Food", "EUR");
-            Expense expense3 = new Expense(3L, LocalDate.now(), "Coffee2", 22.50, "Food", "EUR");
-            Expense expense4 = new Expense(4L, LocalDate.now(), "Coffee3", 32.50, "Food", "EUR");
-            repository.save(expense1);
-            repository.save(expense2);
-            repository.save(expense3);
-            repository.save(expense4);
-        };
+@Component
+public class DataLoader implements CommandLineRunner {
+
+    private final ExpenseRepository expenseRepository;
+
+    public DataLoader(ExpenseRepository expenseRepository) {
+        this.expenseRepository = expenseRepository;
+    }
+
+    @Override
+    public void run(String... args) throws Exception {
+        loadExpenses();
+    }
+
+    private void loadExpenses() {
+        for (int i = 0; i < 5; i++) {
+            Expense expense = new Expense();
+            expense.setAmount(100);
+            expense.setCategory("Category " + i);
+            expense.setCurrency("USD");
+            expense.setExpenseDate(LocalDate.now());
+            expense.setDescription("Expense " + i);
+            // Set properties of the expense
+            expenseRepository.save(expense);
+        }
     }
 }
